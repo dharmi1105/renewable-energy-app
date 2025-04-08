@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary-dark: #1a1a1a;
+  --color-secondary-dark: #2a2a2a;
+  --color-tertiary-dark: #3a3a3a;
+  --color-accent-teal: #4fd1c5;
+}
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden; 
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-primary-dark);
+  color: #f7fafc;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+button:focus, a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #68D391;
+}
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #68D391;
+}
+.toggle-checkbox {
+  right: 0;
+  z-index: 1;
+  border-color: #D1D5DB;
+  transition: all 0.3s;
+}
+.toggle-label {
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: this;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.card {
+  @apply bg-secondary-dark rounded-lg shadow-md overflow-hidden;
+}
+
+.card-header {
+  @apply px-4 py-3 border-b border-tertiary-dark;
+}
+
+.card-body {
+  @apply p-4;
+}
+
+.btn {
+  @apply px-4 py-2 rounded-md font-medium transition-colors duration-200;
+}
+
+.btn-primary {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.btn-secondary {
+  @apply bg-tertiary-dark text-white hover:bg-opacity-90;
+}
+
+.btn-outline {
+  @apply border border-blue-500 text-blue-500 hover:bg-blue-500 hover:bg-opacity-10;
+}
+
+table {
+  @apply w-full;
+}
+
+th {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider;
+}
+
+td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-300;
+}
+
+tbody tr:hover {
+  @apply bg-tertiary-dark;
+}
+
+input, select, textarea {
+  @apply px-3 py-2 bg-tertiary-dark border border-gray-600 rounded-md text-white;
+}
+
+input:focus, select:focus, textarea:focus {
+  @apply outline-none border-blue-500;
+}
