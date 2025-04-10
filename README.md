@@ -34,18 +34,19 @@ The Renewable Energy Dashboard provides real-time monitoring and historical anal
 
 1. Clone the repository:
 
-   git clone https://github.com/yourusername/renewable-energy-dashboard.git
-   cd renewable-energy-dashboard
+   - git clone https://github.com/yourusername/renewable-energy-dashboard.git
+
+   - cd renewable-energy-dashboard
 
 
 2. Start the containers:
 
-   docker-compose up -d
+   - docker-compose up -d
 
 
 3. Initialize the database:
 
-   docker-compose exec backend python init_db.py
+   - docker-compose exec backend python init_db.py
 
 
 4. Access the application:
@@ -59,41 +60,42 @@ The Renewable Energy Dashboard provides real-time monitoring and historical anal
 
 1. Navigate to the backend directory and create a virtual environment:
    
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # Windows: .\venv\Scripts\activate
+   - cd backend
+   - python -m venv venv
+   - source venv/bin/activate  
+   - Windows: .\venv\Scripts\activate
    
 
 2. Install dependencies:
   
-   pip install -r requirements.txt
+   - pip install -r requirements.txt
    
 
 3. Initialize the database:
    
-   python init_db.py
+   - python init_db.py
    
 
 4. Start the server:
   
-   python main.py
+   - python main.py
 
 
 #### Frontend
 
 1. Navigate to the frontend directory:
 
-   cd frontend
+   - cd frontend
 
 
 2. Install dependencies:
  
-   npm install
+   - npm install
 
 
 3. Start the development server:
 
-   npm start
+   - npm start
 
 
 ## API Usage
@@ -114,14 +116,14 @@ Most endpoints require authentication with a JWT token.
 
 Example login:
 
-curl -X POST "http://localhost:8000/token" \
-  -d "username=demo&password=password"
+- curl -X POST "http://localhost:8000/token" \
+   -d "username=demo&password=password"
 
 
 Example API call:
 
-curl -X GET "http://localhost:8000/api/energy/data" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+- curl -X GET "http://localhost:8000/api/energy/data" \
+   -H "Authorization: Bearer YOUR_TOKEN"
 
 
 Demo credentials:
