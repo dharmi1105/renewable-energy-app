@@ -159,3 +159,20 @@ Demo credentials:
    - Connection with smart home systems
    - Electric vehicle charging management
    - Energy trading capabilities
+
+## Contributing
+
+- Fork the repository
+- Create your feature branch (git checkout -b feature/amazing-feature)
+- Commit your changes (git commit -m 'Add some amazing feature')
+- Push to the branch (git push origin feature/amazing-feature)
+- Open a Pull Request
+
+Please ensure your code adheres to the project's code style and includes appropriate tests.
+
+## Contact
+
+If you have any queries or want to connect for any exciting ideas
+- email: dharmeshpatibandla1999@gmail.com
+- LinkedIn: www.linkedin.com/in/p-dharmesh1999
+
