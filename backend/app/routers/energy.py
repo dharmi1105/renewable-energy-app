@@ -23,26 +23,26 @@ async def fetch_energy_data(
     """
     Fetch energy data with flexible timeframe
     """
-    # Calculate date range based on timeframe
+ 
     now = datetime.now()
     if timeframe == "today":
         start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
     elif timeframe == "month":
         start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    else:  # year
+    else:  
         start_date = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
     
-    # Query raw data
+
     raw_data = db.query(EnergyData).filter(
         EnergyData.user_id == current_user.id,
         EnergyData.timestamp >= start_date,
         EnergyData.timestamp <= now
     ).order_by(EnergyData.timestamp).all()
     
-    # Process into the required format
+
     processed_data = []
     
-    # Group data by timestamp
+
     grouped_data = {}
     for item in raw_data:
         timestamp_str = item.timestamp.strftime("%Y-%m-%d %H:%M")
@@ -65,7 +65,7 @@ async def fetch_energy_data(
                 }
             }
         
-        # Add data based on energy type
+
         data_point = grouped_data[timestamp_str]
         data_point["consumption"] += item.consumption
         
@@ -77,16 +77,13 @@ async def fetch_energy_data(
             data_point["generation"]["hydro"] += item.generation
         
         data_point["generation"]["total"] += item.generation
-    
-    # Calculate derived metrics for each data point
+ 
     for timestamp, data in grouped_data.items():
         consumption = data["consumption"]
         generation = data["generation"]["total"]
-        
-        # Carbon footprint calculation (simplified: excess consumption * factor)
+
         data["carbonFootprint"] = max(0, consumption - generation) * 0.5
-        
-        # Cost estimation (simplified)
+
         electricity_cost = consumption * 0.15
         gas_cost = consumption * 0.05
         
@@ -98,7 +95,7 @@ async def fetch_energy_data(
         
         processed_data.append(data)
     
-    # Sort by timestamp
+ 
     processed_data.sort(key=lambda x: x["timestamp"])
     
     return processed_data
@@ -112,10 +109,10 @@ async def get_energy_stats(
     """
     Get aggregated energy statistics
     """
-    # Reuse the data endpoint to get detailed data
+
     energy_data = await fetch_energy_data(timeframe, db, current_user)
     
-    # Calculate stats
+
     stats = calculate_stats(energy_data)
     
     return stats
@@ -128,7 +125,7 @@ async def get_appliance_data(
     """
     Get appliance-specific energy consumption data
     """
-    # For simplicity, returning mock appliance data
+
     return [
         {
             "id": "1",
@@ -192,7 +189,7 @@ def calculate_stats(data: List[Dict]) -> Dict:
             }
         }
     
-    # Aggregate calculations
+
     total_consumption = sum(item['consumption'] for item in data)
     
     total_generation = {
@@ -209,10 +206,10 @@ def calculate_stats(data: List[Dict]) -> Dict:
     
     renewable_percentage = (total_generation['total'] / total_consumption * 100) if total_consumption > 0 else 0
     
-    # Calculate savings (simplified: renewable energy * avg electricity price)
+ 
     savings_estimate = total_generation['total'] * 0.15
     
-    # Energy intensity (consumption per day)
+
     days = len(set(item['timestamp'].split()[0] for item in data))
     energy_intensity = total_consumption / days if days > 0 else 0
     
