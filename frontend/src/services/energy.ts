@@ -1,8 +1,8 @@
 import api from './api';
-import {
-  EnergyData,
-  EnergyStats,
-  TimeFrame,
+import { 
+  EnergyData, 
+  EnergyStats, 
+  TimeFrame, 
   ApplianceData,
   CostBreakdownItem,
   CostProjection,
@@ -14,350 +14,163 @@ import {
   RoomEfficiencyTip
 } from '../types/energy';
 
-
-export const getDetailedApplianceData = async (): Promise<ApplianceData[]> => {
+async function fetchWithFallback<T>(endpoint: string, mockDataFn: () => T, params?: any): Promise<T> {
   try {
-    const response = await api.get('/api/energy/detailed-appliances');
+    const response = await api.get(endpoint, { params });
     return response.data;
   } catch (error) {
-    console.error('Error fetching detailed appliance data:', error);
-    return mockDetailedApplianceData();
+    console.error(`Error fetching from ${endpoint}:`, error);
+    return mockDataFn();
   }
+}
+
+export const getEnergyData = async (timeframe: TimeFrame = 'month'): Promise<EnergyData[]> => {
+  return fetchWithFallback('/api/energy/data', () => mockEnergyData(timeframe), { timeframe });
 };
 
-
-export const getCostBreakdown = async (
-  timeframe: TimeFrame = 'month'
-): Promise<CostBreakdownItem[]> => {
-  try {
-    const response = await api.get('/api/energy/cost-breakdown', {
-      params: { timeframe }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching cost breakdown:', error);
-    return mockCostBreakdown();
-  }
-};
-
-export const getCostProjections = async (): Promise<CostProjection[]> => {
-  try {
-    const response = await api.get('/api/energy/cost-projections');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching cost projections:', error);
-    return mockCostProjections();
-  }
-};
-
-export const getCostSavingOpportunities = async (): Promise<CostSavingOpportunity[]> => {
-  try {
-    const response = await api.get('/api/energy/cost-saving-opportunities');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching cost saving opportunities:', error);
-    return mockCostSavingOpportunities();
-  }
-};
-
-
-export const getEmissionsData = async (
-  timeframe: TimeFrame = 'month'
-): Promise<EmissionsData[]> => {
-  try {
-    const response = await api.get('/api/energy/emissions', {
-      params: { timeframe }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching emissions data:', error);
-    return mockEmissionsData(timeframe);
-  }
-};
-
-export const getEmissionsComparison = async (): Promise<EmissionsComparison[]> => {
-  try {
-    const response = await api.get('/api/energy/emissions-comparison');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching emissions comparison:', error);
-    return mockEmissionsComparison();
-  }
-};
-
-export const getEmissionsReductionTips = async (): Promise<EmissionsReductionTip[]> => {
-  try {
-    const response = await api.get('/api/energy/emissions-reduction-tips');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching emissions reduction tips:', error);
-    return mockEmissionsReductionTips();
-  }
-};
-
-
-export const getRoomUsageData = async (): Promise<RoomUsageData[]> => {
-  try {
-    const response = await api.get('/api/energy/room-usage');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching room usage data:', error);
-    return mockRoomUsageData();
-  }
-};
-
-export const getRoomEfficiencyTips = async (): Promise<RoomEfficiencyTip[]> => {
-  try {
-    const response = await api.get('/api/energy/room-efficiency-tips');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching room efficiency tips:', error);
-    return mockRoomEfficiencyTips();
-  }
-};
-
-
-export const getEnergyData = async (
-  timeframe: TimeFrame = 'month'
-): Promise<EnergyData[]> => {
-  try {
-    const response = await api.get(`/api/energy/data`, {
-      params: { timeframe }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching energy data:', error);
-    return mockEnergyData(timeframe);
-  }
-};
-
-export const getEnergyStats = async (
-  timeframe: TimeFrame = 'month'
-): Promise<EnergyStats> => {
-  try {
-    const response = await api.get(`/api/energy/stats`, {
-      params: { timeframe }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching energy stats:', error);
-    return mockEnergyStats();
-  }
+export const getEnergyStats = async (timeframe: TimeFrame = 'month'): Promise<EnergyStats> => {
+  return fetchWithFallback('/api/energy/stats', mockEnergyStats, { timeframe });
 };
 
 export const getApplianceData = async (): Promise<ApplianceData[]> => {
-  try {
-    const response = await api.get('/api/energy/appliances');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching appliance data:', error);
-    return mockApplianceData();
-  }
+  return fetchWithFallback('/api/energy/appliances', mockApplianceData);
 };
 
-
-const mockEnergyData = (timeframe: TimeFrame): EnergyData[] => {
-  const now = new Date();
-  const data: EnergyData[] = [];
-  let numberOfPoints = 0;
-
-  switch (timeframe) {
-    case 'today':
-      numberOfPoints = 24; 
-      break;
-    case 'month':
-      numberOfPoints = 30; 
-      break;
-    case 'year':
-      numberOfPoints = 12; 
-      break;
-    default:
-      numberOfPoints = 30; 
-  }
-
-  for (let i = 0; i < numberOfPoints; i++) {
-    const date = new Date(now);
-
-    if (timeframe === 'today') {
-      
-      date.setHours(i, 0, 0, 0);
-    } else if (timeframe === 'month') {
-      
-      date.setDate(now.getDate() - (numberOfPoints - i - 1));
-      date.setHours(12, 0, 0, 0); 
-    } else {
-      
-      date.setMonth(now.getMonth() - (numberOfPoints - i - 1));
-      date.setDate(15); 
-      date.setHours(12, 0, 0, 0); 
-    }
-
-    
-    const baseConsumption = 8 + Math.random() * 4; 
-    const solarGen = 2 + Math.random() * 2; 
-    const windGen = 1 + Math.random() * 2; 
-    const hydroGen = 0.5 + Math.random() * 1.5; 
-    const totalGen = solarGen + windGen + hydroGen;
-
-    
-    const seasonalFactor = timeframe !== 'today'
-      ? 1 + 0.3 * Math.sin(2 * Math.PI * i / numberOfPoints)
-      : 1;
-
-    
-    const timeOfDayFactor = timeframe === 'today'
-      ? (i >= 6 && i <= 18)
-        ? 1 + 0.5 * Math.sin(Math.PI * (i - 6) / 12) 
-        : 0.6 
-      : 1;
-
-    const consumption = baseConsumption * seasonalFactor * timeOfDayFactor;
-    const generation = {
-      solar: solarGen * seasonalFactor * (timeframe === 'today' && (i < 6 || i > 18) ? 0.1 : 1), 
-      wind: windGen * seasonalFactor,
-      hydro: hydroGen * seasonalFactor,
-      total: 0 
-    };
-    generation.total = generation.solar + generation.wind + generation.hydro;
-
-    const electricityCost = consumption * 0.15; 
-    const gasCost = consumption * 0.05; 
-
-    data.push({
-      timestamp: date.toISOString(),
-      consumption,
-      generation,
-      carbonFootprint: Math.max(0, consumption - generation.total) * 0.5,
-      costs: {
-        electricity: electricityCost,
-        gas: gasCost,
-        total: electricityCost + gasCost
-      }
-    });
-  }
-
-  return data;
+export const getDetailedApplianceData = async (): Promise<ApplianceData[]> => {
+  return fetchWithFallback('/api/energy/detailed-appliances', mockDetailedApplianceData);
 };
 
-const mockEnergyStats = (): EnergyStats => {
-  
-  const totalConsumption = 325.5 + Math.random() * 50;
-  const solarGen = 120.2 + Math.random() * 30;
-  const windGen = 85.4 + Math.random() * 20;
-  const hydroGen = 45.7 + Math.random() * 15;
-  const totalGen = solarGen + windGen + hydroGen;
-  const renewablePerc = (totalGen / totalConsumption) * 100;
-
-  return {
-    totalConsumption,
-    totalGeneration: {
-      solar: solarGen,
-      wind: windGen,
-      hydro: hydroGen,
-      total: totalGen
-    },
-    renewablePercentage: renewablePerc,
-    carbonFootprint: Math.max(0, totalConsumption - totalGen) * 0.5,
-    savingsEstimate: totalGen * 0.15,
-    energyIntensity: totalConsumption / 30,
-    costs: {
-      electricity: totalConsumption * 0.15,
-      gas: totalConsumption * 0.05,
-      total: (totalConsumption * 0.15) + (totalConsumption * 0.05)
-    }
-  };
+export const getCostBreakdown = async (timeframe: TimeFrame = 'month'): Promise<CostBreakdownItem[]> => {
+  return fetchWithFallback('/api/energy/cost-breakdown', mockCostBreakdown, { timeframe });
 };
 
-const mockApplianceData = (): ApplianceData[] => [
+export const getCostProjections = async (): Promise<CostProjection[]> => {
+  return fetchWithFallback('/api/energy/cost-projections', mockCostProjections);
+};
+
+export const getCostSavingOpportunities = async (): Promise<CostSavingOpportunity[]> => {
+  return fetchWithFallback('/api/energy/cost-saving-opportunities', mockCostSavingOpportunities);
+};
+
+export const getEmissionsData = async (timeframe: TimeFrame = 'month'): Promise<EmissionsData[]> => {
+  return fetchWithFallback('/api/energy/emissions', () => mockEmissionsData(timeframe), { timeframe });
+};
+
+export const getEmissionsComparison = async (): Promise<EmissionsComparison[]> => {
+  return fetchWithFallback('/api/energy/emissions-comparison', mockEmissionsComparison);
+};
+
+export const getEmissionsReductionTips = async (): Promise<EmissionsReductionTip[]> => {
+  return fetchWithFallback('/api/energy/emissions-reduction-tips', mockEmissionsReductionTips);
+};
+
+export const getRoomUsageData = async (): Promise<RoomUsageData[]> => {
+  return fetchWithFallback('/api/energy/room-usage', mockRoomUsageData);
+};
+
+export const getRoomEfficiencyTips = async (): Promise<RoomEfficiencyTip[]> => {
+  return fetchWithFallback('/api/energy/room-efficiency-tips', mockRoomEfficiencyTips);
+};
+
+const mockDetailedApplianceData = (): ApplianceData[] => [
   {
     id: "1",
     name: "Heating & AC",
     consumption: 1.4,
     unit: "kWh",
-    energyEfficiency: "A+",
-    standbyPower: 0.1,
-    usageHours: 5,
-    timeOfUse: ["06:00-09:00", "17:00-22:00"]
+    timeOfUse: ["06:00-09:00", "17:00-22:00"],
+    energyEfficiency: "B",
+    standbyPower: 0.05,
+    usageHours: 8
   },
   {
     id: "2",
     name: "EV Charge",
     consumption: 0.9,
     unit: "kWh",
-    energyEfficiency: "A++",
-    standbyPower: 0,
-    usageHours: 3,
-    timeOfUse: ["22:00-06:00"]
+    timeOfUse: ["22:00-06:00"],
+    energyEfficiency: "A+",
+    standbyPower: 0.02,
+    usageHours: 4
   },
   {
-    id: "3",
+    id: "3", 
     name: "Refrigerator",
     consumption: 0.7,
     unit: "kWh",
-    energyEfficiency: "A+",
-    standbyPower: 0.7,
-    usageHours: 24,
-    timeOfUse: ["Various"]
+    timeOfUse: ["Various"],
+    energyEfficiency: "A++",
+    standbyPower: 0.0,
+    usageHours: 24
   },
   {
     id: "4",
     name: "Washer & Dryer",
     consumption: 0.6,
     unit: "kWh",
-    energyEfficiency: "B",
-    standbyPower: 0.02,
-    usageHours: 2,
-    timeOfUse: ["10:00-12:00"]
+    timeOfUse: ["10:00-12:00", "15:00-17:00"],
+    energyEfficiency: "A",
+    standbyPower: 0.03,
+    usageHours: 2
   },
   {
     id: "5",
     name: "Lighting",
     consumption: 0.5,
     unit: "kWh",
+    timeOfUse: ["06:00-08:00", "18:00-23:00"],
     energyEfficiency: "A+++",
-    standbyPower: 0,
-    usageHours: 6,
-    timeOfUse: ["17:00-23:00"]
-  },
-  {
-    id: "6",
-    name: "Other",
-    consumption: 0.3,
-    unit: "kWh",
-    energyEfficiency: "C",
-    standbyPower: 0.1,
-    usageHours: 4,
-    timeOfUse: ["Various"]
+    standbyPower: 0.01,
+    usageHours: 7
   }
 ];
 
-const mockDetailedApplianceData = (): ApplianceData[] => {
-  
-  return mockApplianceData();
-};
-
-
 const mockCostBreakdown = (): CostBreakdownItem[] => [
-  { category: "Electricity", amount: 45.50, percentage: 60, change: -2.3 },
-  { category: "Heating", amount: 20.75, percentage: 25, change: 1.5 },
-  { category: "Appliances", amount: 10.25, percentage: 12, change: -0.8 },
-  { category: "Lighting", amount: 2.50, percentage: 3, change: -5.2 }
+  { 
+    category: "Electricity", 
+    amount: 45.50, 
+    percentage: 60, 
+    change: -2.3 
+  },
+  { 
+    category: "Gas", 
+    amount: 15.25, 
+    percentage: 20, 
+    change: 1.5 
+  },
+  { 
+    category: "Water Heating", 
+    amount: 7.65, 
+    percentage: 10, 
+    change: -0.8 
+  },
+  { 
+    category: "Renewable Sources", 
+    amount: -10.50, 
+    percentage: -13.8, 
+    change: -5.2 
+  },
+  { 
+    category: "Other", 
+    amount: 7.21, 
+    percentage: 9.5, 
+    change: 0.5 
+  }
 ];
-
 
 const mockCostProjections = (): CostProjection[] => [
   { month: "Jan", actual: 50.00, projected: 52.00 },
   { month: "Feb", actual: 48.50, projected: 50.00 },
-  { month: "Mar", actual: 47.00, projected: 49.00 },
-  { month: "Apr", actual: 45.50, projected: 48.00 },
-  { month: "May", actual: 42.00, projected: 47.00 },
-  { month: "Jun", actual: 40.00, projected: 45.00 },
-  { month: "Jul", actual: 0, projected: 43.00 },
-  { month: "Aug", actual: 0, projected: 45.00 },
-  { month: "Sep", actual: 0, projected: 48.00 },
-  { month: "Oct", actual: 0, projected: 50.00 },
-  { month: "Nov", actual: 0, projected: 52.00 },
-  { month: "Dec", actual: 0, projected: 55.00 }
+  { month: "Mar", actual: 45.75, projected: 48.00 },
+  { month: "Apr", actual: 42.50, projected: 46.00 },
+  { month: "May", actual: 40.25, projected: 44.00 },
+  { month: "Jun", actual: 38.50, projected: 40.00 },
+  { month: "Jul", actual: 35.75, projected: 38.00 },
+  { month: "Aug", actual: 36.50, projected: 39.00 },
+  { month: "Sep", actual: 38.25, projected: 42.00 },
+  { month: "Oct", actual: 42.50, projected: 45.00 },
+  { month: "Nov", actual: 47.75, projected: 48.00 },
+  { month: "Dec", actual: 52.25, projected: 54.00 }
 ];
 
 const mockCostSavingOpportunities = (): CostSavingOpportunity[] => [
@@ -372,70 +185,38 @@ const mockCostSavingOpportunities = (): CostSavingOpportunity[] => [
   },
   {
     id: "2",
-    title: "Smart Thermostat",
-    description: "Install a smart thermostat to optimize heating & cooling",
+    title: "Smart Thermostat Installation",
+    description: "Install a programmable thermostat",
     potentialSavings: 180.00,
-    implementationCost: 200.00,
-    paybackPeriod: 1.2,
+    implementationCost: 150.00,
+    paybackPeriod: 0.8,
     difficulty: "medium"
   },
   {
     id: "3",
-    title: "Solar Panels",
+    title: "Solar Panel Installation",
     description: "Install rooftop solar panels",
     potentialSavings: 850.00,
-    implementationCost: 6000.00,
-    paybackPeriod: 7.5,
+    implementationCost: 3500.00,
+    paybackPeriod: 4.1,
     difficulty: "hard"
   }
 ];
 
-const mockEmissionsData = (timeframe: TimeFrame): EmissionsData[] => {
-  const data: EmissionsData[] = [];
-  const now = new Date();
-
-  
-  const dataPoints = timeframe === 'today' ? 24 :
-    timeframe === 'month' ? 30 : 12;
-
-  for (let i = 0; i < dataPoints; i++) {
-    const date = new Date(now);
-
-    if (timeframe === 'today') {
-      date.setHours(i);
-    } else if (timeframe === 'month') {
-      date.setDate(i + 1);
-    } else {
-      date.setMonth(i);
+const mockEmissionsData = (timeframe: TimeFrame): EmissionsData[] => [
+  {
+    timestamp: new Date().toISOString(),
+    carbonEmissions: 5.5,
+    renewableOffsets: 2.3,
+    netEmissions: 3.2,
+    sourceBreakdown: {
+      electricity: 2.1,
+      heating: 1.5,
+      transportation: 1.2,
+      other: 0.7
     }
-
-    
-    const carbonEmissions = 3 + Math.random() * 4;
-    const renewableOffsets = 1 + Math.random() * 3;
-    const netEmissions = Math.max(0, carbonEmissions - renewableOffsets);
-
-    
-    const electricity = 1 + Math.random() * 2;
-    const heating = 0.8 + Math.random() * 1.2;
-    const transportation = 0.7 + Math.random() * 1;
-    const other = 0.5 + Math.random() * 0.5;
-
-    data.push({
-      timestamp: date.toISOString(),
-      carbonEmissions,
-      renewableOffsets,
-      netEmissions,
-      sourceBreakdown: {
-        electricity,
-        heating,
-        transportation,
-        other
-      }
-    });
   }
-
-  return data;
-};
+];
 
 const mockEmissionsComparison = (): EmissionsComparison[] => [
   {
@@ -447,18 +228,18 @@ const mockEmissionsComparison = (): EmissionsComparison[] => [
   {
     category: "Transportation",
     yourEmissions: 3.2,
-    averageEmissions: 4.8,
+    averageEmissions: 4.6,
     unit: "tons CO₂/yr"
   },
   {
-    category: "Diet",
-    yourEmissions: 2.1,
-    averageEmissions: 2.5,
+    category: "Food",
+    yourEmissions: 2.8,
+    averageEmissions: 3.3,
     unit: "tons CO₂/yr"
   },
   {
     category: "Consumer Goods",
-    yourEmissions: 1.8,
+    yourEmissions: 1.9,
     averageEmissions: 2.2,
     unit: "tons CO₂/yr"
   }
@@ -475,15 +256,15 @@ const mockEmissionsReductionTips = (): EmissionsReductionTip[] => [
   {
     id: "2",
     title: "Electric Vehicle",
-    description: "Switch to an electric vehicle for daily commuting",
+    description: "Switch to an electric vehicle",
     potentialReduction: 1.8,
     difficulty: "hard"
   },
   {
     id: "3",
-    title: "Smart Thermostat",
-    description: "Install a programmable thermostat",
-    potentialReduction: 0.8,
+    title: "Smart Home System",
+    description: "Install smart thermostats and lighting",
+    potentialReduction: 0.7,
     difficulty: "easy"
   }
 ];
@@ -496,71 +277,66 @@ const mockRoomUsageData = (): RoomUsageData[] => [
     percentage: 35,
     temperature: 22.5,
     occupancyRate: 0.6,
-    peakHours: [10, 14, 19, 20],
+    peakHours: [10, 14, 19],
     devices: [
-      { deviceId: "1-1", deviceName: "TV", consumption: 30.2, percentage: 25 },
-      { deviceId: "1-2", deviceName: "Lights", consumption: 15.5, percentage: 13 },
-      { deviceId: "1-3", deviceName: "Gaming Console", consumption: 22.3, percentage: 18 },
-      { deviceId: "1-4", deviceName: "Home Assistant", consumption: 5.8, percentage: 5 }
+      {
+        deviceId: "1",
+        deviceName: "TV",
+        consumption: 30.2,
+        percentage: 25
+      },
+      {
+        deviceId: "2",
+        deviceName: "Lighting",
+        consumption: 15.8,
+        percentage: 13
+      }
     ]
   },
   {
     roomId: "2",
     roomName: "Kitchen",
-    consumption: 95.2,
+    consumption: 95.3,
     percentage: 28,
-    temperature: 23.1,
+    temperature: 23.0,
     occupancyRate: 0.4,
-    peakHours: [7, 8, 12, 18, 19],
+    peakHours: [7, 12, 18],
     devices: [
-      { deviceId: "2-1", deviceName: "Refrigerator", consumption: 35.8, percentage: 38 },
-      { deviceId: "2-2", deviceName: "Microwave", consumption: 18.2, percentage: 19 },
-      { deviceId: "2-3", deviceName: "Coffee Maker", consumption: 10.5, percentage: 11 },
-      { deviceId: "2-4", deviceName: "Lights", consumption: 8.3, percentage: 9 }
+      {
+        deviceId: "3",
+        deviceName: "Refrigerator",
+        consumption: 45.6,
+        percentage: 48
+      },
+      {
+        deviceId: "4",
+        deviceName: "Microwave",
+        consumption: 25.4,
+        percentage: 27
+      }
     ]
   },
   {
     roomId: "3",
     roomName: "Bedroom",
-    consumption: 65.3,
-    percentage: 19,
-    temperature: 21.8,
+    consumption: 75.8,
+    percentage: 22,
+    temperature: 21.5,
     occupancyRate: 0.5,
-    peakHours: [6, 7, 22, 23],
+    peakHours: [7, 22, 23],
     devices: [
-      { deviceId: "3-1", deviceName: "Lights", consumption: 12.8, percentage: 20 },
-      { deviceId: "3-2", deviceName: "TV", consumption: 18.5, percentage: 28 },
-      { deviceId: "3-3", deviceName: "Phone Charger", consumption: 5.2, percentage: 8 },
-      { deviceId: "3-4", deviceName: "Fan", consumption: 8.6, percentage: 13 }
-    ]
-  },
-  {
-    roomId: "4",
-    roomName: "Home Office",
-    consumption: 52.5,
-    percentage: 15,
-    temperature: 22.0,
-    occupancyRate: 0.35,
-    peakHours: [9, 10, 11, 14, 15, 16],
-    devices: [
-      { deviceId: "4-1", deviceName: "Computer", consumption: 25.6, percentage: 49 },
-      { deviceId: "4-2", deviceName: "Monitor", consumption: 12.3, percentage: 23 },
-      { deviceId: "4-3", deviceName: "Printer", consumption: 5.8, percentage: 11 },
-      { deviceId: "4-4", deviceName: "Lights", consumption: 6.2, percentage: 12 }
-    ]
-  },
-  {
-    roomId: "5",
-    roomName: "Bathroom",
-    consumption: 10.8,
-    percentage: 3,
-    temperature: 23.5,
-    occupancyRate: 0.15,
-    peakHours: [7, 8, 20, 21],
-    devices: [
-      { deviceId: "5-1", deviceName: "Lights", consumption: 5.3, percentage: 49 },
-      { deviceId: "5-2", deviceName: "Hair Dryer", consumption: 3.8, percentage: 35 },
-      { deviceId: "5-3", deviceName: "Electric Toothbrush", consumption: 0.9, percentage: 8 }
+      {
+        deviceId: "5",
+        deviceName: "Lighting",
+        consumption: 12.4,
+        percentage: 16
+      },
+      {
+        deviceId: "6",
+        deviceName: "Computer",
+        consumption: 35.6,
+        percentage: 47
+      }
     ]
   }
 ];
@@ -570,49 +346,104 @@ const mockRoomEfficiencyTips = (): RoomEfficiencyTip[] => [
     tipId: "1",
     roomId: "1",
     title: "Smart Thermostat",
-    description: "Install a smart thermostat to optimize heating and cooling in your living room",
-    potentialSavings: 65.00,
+    description: "Install a smart thermostat",
+    potentialSavings: 50.00,
     difficulty: "easy"
   },
   {
     tipId: "2",
     roomId: "1",
     title: "LED Lighting",
-    description: "Replace all living room lights with LED bulbs",
-    potentialSavings: 35.00,
+    description: "Replace with LED bulbs",
+    potentialSavings: 30.00,
     difficulty: "easy"
   },
   {
     tipId: "3",
     roomId: "2",
-    title: "Energy Star Appliances",
-    description: "Upgrade to Energy Star certified kitchen appliances",
+    title: "Energy Efficient Appliances",
+    description: "Upgrade to energy-efficient appliances",
     potentialSavings: 120.00,
     difficulty: "hard"
   },
   {
     tipId: "4",
-    roomId: "2",
-    title: "Efficient Cooking",
-    description: "Use microwave or electric kettle instead of stove when possible",
-    potentialSavings: 25.00,
-    difficulty: "easy"
-  },
-  {
-    tipId: "5",
     roomId: "3",
-    title: "Smart Power Strip",
-    description: "Use a smart power strip to eliminate phantom power usage in bedroom",
-    potentialSavings: 30.00,
-    difficulty: "easy"
+    title: "Motion Sensors",
+    description: "Install motion sensors for lighting",
+    potentialSavings: 25.00,
+    difficulty: "medium"
+  }
+];
+
+const mockEnergyData = (timeframe: TimeFrame): EnergyData[] => [
+  {
+    timestamp: new Date().toISOString(),
+    consumption: 10.5,
+    generation: {
+      solar: 3.2,
+      wind: 2.1,
+      hydro: 1.5,
+      total: 6.8
+    },
+    carbonFootprint: 2.3,
+    costs: {
+      electricity: 1.58,
+      gas: 0.53,
+      total: 2.11
+    }
+  }
+];
+
+const mockEnergyStats = (): EnergyStats => ({
+  totalConsumption: 325.5,
+  totalGeneration: {
+    solar: 120.2,
+    wind: 85.4,
+    hydro: 45.7,
+    total: 251.3
+  },
+  renewablePercentage: 77.2,
+  carbonFootprint: 37.1,
+  savingsEstimate: 42.5,
+  energyIntensity: 10.85,
+  costs: {
+    electricity: 48.83,
+    gas: 16.28,
+    total: 65.11
+  }
+});
+
+const mockApplianceData = (): ApplianceData[] => [
+  {
+    id: "1",
+    name: "Heating & AC",
+    consumption: 1.4,
+    unit: "kWh"
   },
   {
-    tipId: "6",
-    roomId: "4",
-    title: "Low-Flow Fixtures",
-    description: "Install low-flow showerheads and faucets in bathroom",
-    potentialSavings: 40.00,
-    difficulty: "medium"
+    id: "2",
+    name: "EV Charge",
+    consumption: 0.9,
+    unit: "kWh"
+  },
+  {
+    id: "3",
+    name: "Refrigerator",
+    consumption: 0.7,
+    unit: "kWh"
+  },
+  {
+    id: "4",
+    name: "Washer & Dryer",
+    consumption: 0.6,
+    unit: "kWh"
+  },
+  {
+    id: "5",
+    name: "Lighting",
+    consumption: 0.5,
+    unit: "kWh"
   }
 ];
 

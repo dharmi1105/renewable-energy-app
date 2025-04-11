@@ -9,6 +9,7 @@ import {
   Cog6ToothIcon,
   QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
+import { logout } from '../../services/auth';
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -46,6 +47,10 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const toggleDropdown = (dropdown: string) => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
   };
+
+  const handleLogout = () => {
+    logout();
+  }
 
   return (
     <div className="h-16 flex items-center justify-between bg-gray-800 px-4 border-b border-gray-700">
@@ -154,6 +159,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               </button>
               <button 
                 className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600"
+                onClick={handleLogout}
               >
                 Sign out
               </button>

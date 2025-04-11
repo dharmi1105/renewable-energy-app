@@ -92,6 +92,12 @@ export const logout = (): void => {
   localStorage.removeItem('user');
   
   clearTokenRefreshTimers();
+
+  if (axios.defaults && axios.defaults.headers) {
+    delete axios.defaults.headers.common['Authorization'];
+  }
+
+  window.location.href = '/login';
   
   console.log('User logged out');
 };
